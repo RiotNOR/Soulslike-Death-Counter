@@ -8,6 +8,7 @@ Type whatever message you may want the output to be like. By default it just wri
 
 Set refresh rate in milliseconds. (1000ms = 1 second)
 
+### Optional ###
 Set the output to be saved to a specific file.
 
 Hit "Start".
