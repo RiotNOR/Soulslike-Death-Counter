@@ -1,5 +1,5 @@
 # Soulslike-Death-Counter
-Death counters for multiple Soulslike games.
+Death counters for multiple Soulslike games. Supports DS1: PTD, DSR, DS2, DS3, Nioh, and Sekiro.
 
 Counts and writes your current character's death count to file. Useful for streaming in combination with reading text from file in OBS, or hell - just checking to see how many deaths you had on your current playthrough.
 
