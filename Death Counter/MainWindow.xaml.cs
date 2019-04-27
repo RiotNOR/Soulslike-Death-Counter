@@ -202,7 +202,7 @@ namespace Death_Counter
                     CleanName = "Sekiro: Shadows Die Twice",
                     Offsets = new List<Int32>
                     {
-                        0x3B47CF0,
+                        0x3B48D30,
                         0x90
                     }
                 }
