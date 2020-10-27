@@ -32,7 +32,10 @@ namespace Death_Counter
     {
         public string ProcessName;
         public string CleanName;
+        public long BaseAddress;
         public List<Int32> Offsets;
+        public List<long> LongOffsets;
+        public bool IsBigEndian;
     }
 
     public partial class MainWindow : Window
@@ -147,6 +150,17 @@ namespace Death_Counter
             {
                 new GameModel
                 {
+                    ProcessName = "rpcs3",
+                    CleanName = "Demon's Souls (RPCS3)",
+                    BaseAddress = 0x300000000,
+                    LongOffsets = new List<long>
+                    {
+                        0x3301E76B4
+                    },
+                    IsBigEndian = true
+                },
+                new GameModel
+                {
                     ProcessName = "DARKSOULS",
                     CleanName = "Dark Souls: PTD",
                     Offsets = new List<Int32>
@@ -205,7 +219,8 @@ namespace Death_Counter
                         0x3B48D30,
                         0x90
                     }
-                }
+                },
+
             };
         }
 
@@ -240,14 +255,29 @@ namespace Death_Counter
             isWow64 = Is64Bit(gameProcess[0]);
 
             IntPtr baseAddress = gameProcess[0].MainModule.BaseAddress;
+
+            if (currentGame.BaseAddress != 0)
+            {
+                baseAddress = (IntPtr)currentGame.BaseAddress;
+            }
+
             IntPtr finalValue = baseAddress;
 
             // Move to recursive instead?
-            if (currentGame.Offsets.Count == 1)
+            if (currentGame.Offsets != null && currentGame.Offsets.Count == 1)
             {
                 finalValue = IntPtr.Add(baseAddress, currentGame.Offsets[0]);
             }
-            else
+            else if (currentGame.Offsets == null && currentGame.LongOffsets != null && currentGame.LongOffsets.Count == 1)
+            {
+                // Drit i det
+                if (isWow64)
+                {
+                    finalValue = IntPtr.Add(baseAddress, (int)currentGame.LongOffsets[0]);
+                }
+                
+            }
+            else if (currentGame.Offsets != null)
             {
                 for (var i = 0; i < currentGame.Offsets.Count; i++)
                 {
@@ -347,6 +377,13 @@ namespace Death_Counter
         private void GetDeaths64(Process process, Int64 address, int length, out int bytesRead)
         {
             byte[] memoryOutput = GetMemory64(process, address, 4, out bytesRead);
+
+            if (currentGame.IsBigEndian)
+            {
+                Console.WriteLine(address);
+                Array.Reverse(memoryOutput, 0, memoryOutput.Length);
+            }
+
             int value = BitConverter.ToInt32(memoryOutput, 0);
             currentDeaths = value;
 
